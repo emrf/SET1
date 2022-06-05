@@ -1,4 +1,5 @@
 {
+  "homepage": "https://smeisner10.github.io/Startup-Evaluation-Tool",
   "name": "eval-tool",
   "version": "0.1.0",
   "private": true,
@@ -7,10 +8,13 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.1.3",
+    "chart.js": "^2.9.4",
     "d3": "^7.4.4",
     "d3-simple-slider": "^1.10.4",
+    "jquery": "^3.6.0",
     "rc-slider": "^10.0.0",
     "react": "^18.1.0",
+    "react-chartjs-2": "^4.1.0",
     "react-compound-slider": "^3.3.1",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
@@ -19,6 +23,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

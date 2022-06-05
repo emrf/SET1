@@ -42,3 +42,10 @@
 .example-track {}
 
 .example-mark {} */
+
+#radar-canvas {
+  background-color: rgb(181, 178, 178);
+  margin-bottom: 50px;
+  display: inline-block;
+
+}
