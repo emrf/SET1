@@ -34,7 +34,7 @@ export const Data = {
   },
   options: {
     animation: {
-      duration: 0
+      duration: 1000
     }
   }
 };

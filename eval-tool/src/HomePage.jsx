@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import ReactSlider from 'react-slider'
-// import RadarChart from "./components/RadarChart";
 import { Data } from "./Data";
 import $ from 'jquery';
 import { Chart } from 'chart.js';
@@ -42,7 +41,6 @@ export default class HomePage extends Component {
   fundingInput() {
     let fundingStage = d3.select('#fundingSelect').property('value');
     this.setState({ funding: fundingStage }, this.updateScore)
-    console.log(fundingStage);
   }
 
   sectorInput() {
@@ -50,7 +48,6 @@ export default class HomePage extends Component {
     let newData = this.state.data;
     newData.data.datasets[0].data[4] = this.sectorMap[sector] * 10;
     this.setState({ sector: sector, data: newData }, this.updateScore)
-    console.log(sector);
   }
 
   updateScore() {
@@ -60,25 +57,24 @@ export default class HomePage extends Component {
     let sectorScore = this.sectorMap[sector];
     let execScore = this.state.execExper;
     let newScore = sectorScore + fundingScore + execScore;
-
     let newData = this.state.data;
     this.updateChart(newData);
-
     this.setState({ score: newScore })
     document.getElementById("score-text").innerHTML = newScore;
-    console.log(newScore);
   }
 
   updateChart(newData) {
+    this.chart.destroy();
     var ctx = document.getElementById('radar-canvas');
-    var newChart = new Chart(ctx, newData);
-    newChart.update();
+    this.chart = new Chart(ctx, newData);
+    this.chart.update();
   }
 
   componentDidMount() {
     var ctx = document.getElementById('radar-canvas');
-    var newChart = new Chart(ctx, this.state.data);
-    newChart.update();
+    this.chart = new Chart(ctx, this.state.data);
+    this.chart.update();
+    this.state.data.options.animation.duration = 0;
   }
 
   render() {
@@ -133,19 +129,16 @@ export default class HomePage extends Component {
             markClassName="example-mark"
             onChange={this.updateSlider}
             renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
+            renderTrack={(props, state) => <div {...props} />}
           />
-
 
         </div>
         <br />
         <div class="div-score">
           <p >Score: <span id="score-text"></span></p>
         </div>
-        <canvas id="radar-canvas" style={{ width: 500 }}>
-          {/* <RadarChart id="chart" chartData={this.state.data} /> */}
-
+        <canvas id="radar-canvas" style={{ width: 500, height: 500 }}>
         </canvas>
-
       </div >
     )
   }
