@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Startup-Evaluation-Tool/static/css/main.f5292216.css",
-    "main.js": "/Startup-Evaluation-Tool/static/js/main.bf56d22c.js",
+    "main.css": "/Startup-Evaluation-Tool/static/css/main.d3fe7d42.css",
+    "main.js": "/Startup-Evaluation-Tool/static/js/main.fb5a7f6a.js",
     "static/js/787.8e6b4950.chunk.js": "/Startup-Evaluation-Tool/static/js/787.8e6b4950.chunk.js",
     "index.html": "/Startup-Evaluation-Tool/index.html",
-    "main.f5292216.css.map": "/Startup-Evaluation-Tool/static/css/main.f5292216.css.map",
-    "main.bf56d22c.js.map": "/Startup-Evaluation-Tool/static/js/main.bf56d22c.js.map",
+    "main.d3fe7d42.css.map": "/Startup-Evaluation-Tool/static/css/main.d3fe7d42.css.map",
+    "main.fb5a7f6a.js.map": "/Startup-Evaluation-Tool/static/js/main.fb5a7f6a.js.map",
     "787.8e6b4950.chunk.js.map": "/Startup-Evaluation-Tool/static/js/787.8e6b4950.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f5292216.css",
-    "static/js/main.bf56d22c.js"
+    "static/css/main.d3fe7d42.css",
+    "static/js/main.fb5a7f6a.js"
   ]
 }
