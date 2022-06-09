@@ -90,3 +90,85 @@
   height: 10px;
   line-height: 38px;
 }
+
+#description {
+  width: 70%;
+  justify-content: center;
+  display: inline-block;
+  font-size: larger;
+  font-style: italic;
+  position: relative;
+  padding: 10px;
+}
+
+#description::after {
+  content: "";
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.25);
+  opacity: 0.3;
+  background-image: url("images/background1.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  border-radius: 10px;
+}
+
+#description-text {
+  position: relative;
+}
+
+#startscreen {
+  padding: 20px;
+}
+
+#begin-button-div {
+  padding-top: 20px;
+}
+
+#begin-button {
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: #3774ff;
+  border-radius: 5px;
+  overflow: hidden;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#begin-button:hover {
+  background: #1656ed;
+}
+
+#begin-button:active {
+  background: #052e8e;
+}
+
+.button__text,
+.button__icon {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 100%;
+}
+
+.button__icon {
+  font-size: 1.5em;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/*
+
+keep last
+*/
+
+.hidden {
+  display: none;
+}
