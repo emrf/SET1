@@ -196,6 +196,7 @@
   margin: 0 auto;
 }
 
+.radar-canvas1,
 #radar-canvas,
 #radar-canvas2 {
   background-color: rgb(181, 178, 178);
@@ -203,8 +204,7 @@
   display: hidden;
   position: absolute;
   padding-bottom: 25px;
-  width: 50%;
-  /* float: left; */
+  height: 400px;
 }
 
 /*

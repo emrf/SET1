@@ -37,7 +37,8 @@ export const Data = [
     options: {
       animation: {
         duration: 1000
-      }
+      },
+      // responsive: false
     }
   },
   {
@@ -74,6 +75,7 @@ export const Data = [
       }]
     },
     options: {
+      // responsive: false,
       animation: {
         duration: 1000
       }
