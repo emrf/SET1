@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as d3 from 'd3';
 import ReactSlider from 'react-slider'
 import { Data } from "./Data";
-import $ from 'jquery';
+// import $ from 'jquery';
 import { Chart } from 'chart.js';
 
 
@@ -15,7 +15,9 @@ export default class HomePage extends Component {
       sector: "Other",
       execExper: 5,
       score: 0,
+      age: 0,
       data: Data,
+      submitted: false,
     }
     this.fundingMap = { "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5 }
     this.sectorMap = {
@@ -26,16 +28,25 @@ export default class HomePage extends Component {
     }
     this.fundingInput = this.fundingInput.bind(this);
     this.sectorInput = this.sectorInput.bind(this);
-    this.updateSlider = this.updateSlider.bind(this);
+    this.updateExpSlider = this.updateExpSlider.bind(this);
+    this.updateAgeSlider = this.updateAgeSlider.bind(this);
     this.updateScore = this.updateScore.bind(this);
-    this.updateChart = this.updateChart.bind(this);
+    this.updateChart1 = this.updateChart1.bind(this);
+    this.updateChart2 = this.updateChart2.bind(this);
+    this.submitButton = this.submitButton.bind(this);
   }
 
-  updateSlider(val, i) {
-    let newData = this.state.data
-    newData.data.datasets[0].data[0] = val * 10 //set first index of "your company" dataset to exec exper val
+  updateExpSlider(val, i) {
+    let newData = this.state.data;
+    newData[0].data.datasets[0].data[0] = val * 10 //set first index of "your company" dataset to exec exper val
     this.setState({ execExper: val, data: newData }, this.updateScore);
-    this.updateChart(newData);
+    this.updateChart1(newData[0]);
+  }
+
+  updateAgeSlider(val, i) {
+    this.state.data[1].data.datasets[0].data[3] = val * 5;
+    this.setState({ age: val }, this.updateScore);
+    this.updateChart2(this.state.data[1]);
   }
 
   fundingInput() {
@@ -46,7 +57,7 @@ export default class HomePage extends Component {
   sectorInput() {
     let sector = d3.select('#sectorSelect').property('value');
     let newData = this.state.data;
-    newData.data.datasets[0].data[4] = this.sectorMap[sector] * 10;
+    newData[0].data.datasets[0].data[4] = this.sectorMap[sector] * 10;
     this.setState({ sector: sector, data: newData }, this.updateScore)
   }
 
@@ -56,38 +67,58 @@ export default class HomePage extends Component {
     let sector = this.state.sector;
     let sectorScore = this.sectorMap[sector];
     let execScore = this.state.execExper;
-    let newScore = sectorScore + fundingScore + execScore;
-    let newData = this.state.data;
-    this.updateChart(newData);
+    let ageScore = this.state.age;
+    let newScore = sectorScore + fundingScore + execScore + ageScore;
+    // let newData = this.state.data[0];
+    // this.updateChart(newData);
     this.setState({ score: newScore })
     document.getElementById("score-text").innerHTML = newScore;
+    let companyName = document.getElementById('nameInput').value;
+    if (companyName != "") {
+      this.state.data[0].data.datasets[0].label = companyName;
+    }
   }
 
-  updateChart(newData) {
-    this.chart.destroy();
-    var ctx = document.getElementById('radar-canvas');
-    this.chart = new Chart(ctx, newData);
-    this.chart.update();
+  updateChart1(newData) {
+    if (this.state.submitted) {
+      this.chart.destroy();
+      var ctx = document.getElementById('radar-canvas');
+      this.chart = new Chart(ctx, newData);
+    }
   }
 
-  componentDidMount() {
+  updateChart2(newData) {
+    if (this.state.submitted) {
+      this.chart2.destroy();
+      var ctx2 = document.getElementById('radar-canvas2');
+      this.chart2 = new Chart(ctx2, newData)
+    }
+  }
+
+  submitButton() {
+    this.setState({ submitted: true });
+    document.getElementById('results').classList.remove('hidden');
+    this.updateScore();
+    document.getElementById('radar-canvas').classList.add('radar-canvas1');
     var ctx = document.getElementById('radar-canvas');
-    this.chart = new Chart(ctx, this.state.data);
-    this.chart.update();
-    this.state.data.options.animation.duration = 0;
+    var ctx2 = document.getElementById('radar-canvas2')
+    this.chart = new Chart(ctx, this.state.data[0]);
+    this.chart2 = new Chart(ctx2, this.state.data[1]);
+    this.state.data[0].options.animation.duration = 0;
+    this.state.data[1].options.animation.duration = 0;
   }
 
   render() {
     return (
       <div className="Home-Page">
-        <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-core.min.js">     </script>
-        <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-radar.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-
-        <br />
         <div class="QA">
-          <label htmlFor="fundingSelect">
-            What stage of funding are you currently looking for?
+          <label id="nameInputLabel" class="itm" htmlFor='nameInput'>
+            Company Name:
+          </label>
+          <input id='nameInput' type='text' placeholder='Company A...'></input>
+
+          <label htmlFor="fundingSelect" class="itm right-itm">
+            Series funding desired:
           </label>
           <select id="fundingSelect" class="selector" onChange={this.fundingInput}>
             <option value="A">A</option>
@@ -99,10 +130,9 @@ export default class HomePage extends Component {
           </select>
         </div>
         <br />
-
         <div class="QA">
-          <label htmlFor="sectorSelect">
-            What sector is your company in?
+          <label htmlFor="sectorSelect" >
+            Sector:
           </label>
           <select id="sectorSelect" class="selector" onChange={this.sectorInput}>
             <option value="Ecommerce">Ecommerce</option>
@@ -114,8 +144,21 @@ export default class HomePage extends Component {
             <option value="Other">Other</option>
           </select>
         </div>
+        <div class="QA">
+          <div class="text-slider-pair">
+            <label htmlFor='ageSelect' class="itm">
+              Company age:
+            </label>
+            <ReactSlider id="ageSlider" className="horizontal-slider" marks={true} defaultValue={0}
+              min={0} max={20} thumbClassName="example-thumb" thumbActiveClassName='current-thumb'
+              trackClassName='example-track' markClassName='example-mark'
+              renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
+              renderTrack={(props, state) => <div {...props} />}
+              onChange={this.updateAgeSlider} />
+          </div>
+        </div>
         <br />
-        <div class="slider-space">
+        <div class="slider-space QA">
           <label>Rate your executive's experience: </label>
           <ReactSlider id="slider"
             className="horizontal-slider"
@@ -127,18 +170,36 @@ export default class HomePage extends Component {
             thumbActiveClassName='current-thumb'
             trackClassName="example-track"
             markClassName="example-mark"
-            onChange={this.updateSlider}
+            onChange={this.updateExpSlider}
             renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
             renderTrack={(props, state) => <div {...props} />}
           />
 
         </div>
         <br />
-        <div class="div-score">
-          <p >Score: <span id="score-text"></span></p>
+        <br />
+        <button type="button" class="button" id="submit-button" onClick={this.submitButton}>
+          <span class="button__text">Submit</span>
+          <span class="button__icon">
+            <ion-icon name="checkmark-done"></ion-icon>
+          </span>
+        </button>
+
+
+        <div id="results" class="hidden">
+          <div class="div-score">
+            <p >Score: <span id="score-text"></span></p>
+          </div>
+          <br />
+          <div class="chart-container" style={{ display: "inline-block" }}>
+            <div style={{ width: "400px", height: "400px" }}>
+              <canvas id="radar-canvas" style={{ width: "400px", height: "400px" }}></canvas>
+            </div>
+            <div style={{ width: "400px", height: "400px" }}>
+              <canvas id="radar-canvas2" style={{ width: "400px", height: "400px" }}></canvas>
+            </div>
+          </div>
         </div>
-        <canvas id="radar-canvas" style={{ width: 500, height: 500 }}>
-        </canvas>
       </div >
     )
   }

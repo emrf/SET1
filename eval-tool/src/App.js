@@ -1,10 +1,8 @@
 import './App.css';
 import HomePage from './HomePage.jsx';
-import StartScreen from './StartScreen.js'
-import 'bootstrap/dist/css/bootstrap.min.css'
-// import { useState } from "react";
-// import RadarChart from "./components/RadarChart";
-// import { Data } from "./Data";
+import StartScreen from './StartScreen.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
 
@@ -21,7 +19,7 @@ function App() {
         <div id="startscreen">
           <StartScreen />
           <div id="begin-button-div">
-            <button type="button" id="begin-button" onClick={buttonAction}>
+            <button type="button" class="button" id="begin-button" onClick={buttonAction}>
               <span class="button__text">Begin</span>
               <span class="button__icon">
                 <ion-icon name="arrow-forward-circle-outline"></ion-icon>
@@ -30,9 +28,9 @@ function App() {
           </div>
         </div>
         <div id="homepage" class="hidden">
-          <HomePage id="homepage" />
+          <HomePage />
+
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
       </header>
     </div>

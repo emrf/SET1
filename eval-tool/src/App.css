@@ -1,9 +1,13 @@
 .App {
   text-align: center;
+  padding-top: 50px;
+  padding-bottom: 100px;
+  height: 100%;
 }
 
 .App-header {
-  background-color: #282c34;
+  width: 100%;
+  height: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -21,7 +25,6 @@
   margin-left: 10px;
 }
 
-
 #score-text {
   background: #3774ff;
 }
@@ -30,20 +33,8 @@
   padding: 10px;
 }
 
-/* .horizontal-slider {}
-
-.current-thumb {} */
-
 .example-thumb {
   background-color: #3774ff;
-}
-
-
-#radar-canvas {
-  background-color: rgb(181, 178, 178);
-  margin-bottom: 50px;
-  display: inline-block;
-
 }
 
 .horizontal-slider {
@@ -129,7 +120,7 @@
   padding-top: 20px;
 }
 
-#begin-button {
+.button {
   display: inline-flex;
   padding: 0;
   border: none;
@@ -143,11 +134,11 @@
   cursor: pointer;
 }
 
-#begin-button:hover {
+.button:hover {
   background: #1656ed;
 }
 
-#begin-button:active {
+.button:active {
   background: #052e8e;
 }
 
@@ -162,6 +153,58 @@
 .button__icon {
   font-size: 1.5em;
   background: rgba(0, 0, 0, 0.08);
+}
+
+.QA {
+  font-size: small;
+  display: inline-table;
+  padding-bottom: 50px;
+  text-align: justify;
+  vertical-align: top;
+}
+
+.itm {
+  padding-left: 30px;
+  padding-right: 10px;
+}
+
+.right-itm {
+  text-align: right;
+  align-items: right;
+}
+
+.text-slider-pair {
+  justify-content: flex-end;
+}
+
+#homepage {
+  width: 100%;
+  height: 800px;
+}
+
+.Home-Page {
+  height: 800px;
+}
+
+#results {
+  height: 800px;
+}
+
+#chart-container {
+  display: inline-block;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#radar-canvas,
+#radar-canvas2 {
+  background-color: rgb(181, 178, 178);
+  display: inline-block;
+  display: hidden;
+  position: absolute;
+  padding-bottom: 25px;
+  width: 50%;
+  /* float: left; */
 }
 
 /*
