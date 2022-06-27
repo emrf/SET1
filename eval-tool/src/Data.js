@@ -23,7 +23,7 @@ export const Data = [
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: 'rgb(255, 99, 132)'
       }, {
-        label: 'Median Company in your Industry',
+        label: 'Mean Investor Threshold',
         data: [28, 48, 40, 19, 96, 27, 100],
         fill: true,
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -48,12 +48,12 @@ export const Data = [
       labels: [
         'Growth Rate',
         'Burn Rate',
-        'Cash Available',
-        'Profitability'
+        '% Cash available',
+        'Profit (as % of assets)'
       ],
       datasets: [{
         label: 'Your Company',
-        data: [65, 34, 0, 98],
+        data: [0, 0, 0, 0],
         fill: true,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgb(255, 99, 132)',
@@ -63,8 +63,8 @@ export const Data = [
         pointHoverBorderColor: 'rgb(255, 99, 132)'
       },
       {
-        label: 'Threshold',
-        data: [100, 100, 100, 100],
+        label: 'Mean Investor Threshold',
+        data: [25, 25, 10, 12],
         fill: true,
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
         borderColor: 'rgb(54, 162, 235)',
@@ -75,10 +75,45 @@ export const Data = [
       }]
     },
     options: {
+
       // responsive: false,
       animation: {
         duration: 1000
       }
+    }
+  },
+  {
+    name: 'result_data', //keep last
+    type: 'radar',
+    data: {
+      labels: [
+        'Topic 1',
+        'Topic 2',
+        'Topic 3',
+        'Topic 4',
+      ],
+      datasets: [{
+        label: 'Your Company',
+        data: [10, 29, 39, 32],
+        fill: true,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgb(255, 99, 132)',
+        pointBackgroundColor: 'rgb(255, 99, 132)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgb(255, 99, 132)'
+      },
+      {
+        label: 'Mean Investor Threshold',
+        data: [0, 0, 50, 32],
+        fill: true,
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgb(54, 162, 235)',
+        pointBackgroundColor: 'rgb(54, 162, 235)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgb(54, 162, 235)'
+      }]
     }
   }
 ];
