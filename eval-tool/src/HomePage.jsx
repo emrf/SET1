@@ -5,7 +5,6 @@ import { Data } from "./Data";
 // import $ from 'jquery';
 import { Chart } from 'chart.js';
 import { WeightData } from "./index.js";
-import { Button, Form, Container, Header } from 'semantic-ui-react';
 import axios from 'axios';
 
 const defaultState = {

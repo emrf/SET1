@@ -8,20 +8,6 @@ import React, { useState, useEffect } from 'react';
 
 function App() {
 
-  const [data, setData] = useState([{}])
-
-  useEffect(() => {
-    fetch("/members").then(
-      res => res.json()
-    ).then(
-      data => {
-        setData(data);
-        console.log(data);
-      }
-    )
-  }, []);
-
-
   function buttonAction() {
     document.getElementById('startscreen').classList.add('hidden');
     document.getElementById('homepage').classList.remove('hidden');
@@ -36,13 +22,6 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Startup Evaluator</h1>
-        <h2>
-          {(typeof data.members === 'undefined') ? (
-            <p></p>
-          ) : (data.members.map((member, i) => (
-            <p key={i}>member</p>
-          )))}
-        </h2>
         <div id="startscreen">
           <StartScreen />
           <div id="begin-button-div">
