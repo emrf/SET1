@@ -5,7 +5,11 @@ import { Data } from "./Data";
 // import $ from 'jquery';
 import { Chart } from 'chart.js';
 import { WeightData } from "./index.js";
+import { Button, Form, Container, Header } from 'semantic-ui-react';
+import axios from 'axios';
+
 const defaultState = {
+  name: "",
   funding: "A",
   sector: "Other",
   execExper: 5,
@@ -19,6 +23,8 @@ const defaultState = {
   submitted: false,
   weightData: WeightData
 }
+
+const postURL = 'https://sheet.best/api/sheets/19286fe5-7607-411d-b58f-86fc9f764b63';
 
 export default class HomePage extends Component {
   constructor() {
@@ -47,6 +53,11 @@ export default class HomePage extends Component {
     this.updateChartResults = this.updateChartResults.bind(this);
     this.submitButton = this.submitButton.bind(this);
     this.restartButton = this.restartButton.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
+  }
+
+  changeHandler = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   updateExpSlider(val, i) {
@@ -86,20 +97,15 @@ export default class HomePage extends Component {
   }
 
   calc2Rating() {
-    console.log(WeightData)
     var growthWeight = WeightData.find(e => e[0] == 'Growth Rate')[2];
     var growthRating = growthWeight * this.state.growthRate;
     var burnWeight = WeightData.find(e => e[0] == 'Burn Rate')[2];
     var burnRating = burnWeight * this.state.burnRate;
     var cashWeight = WeightData.find(e => e[0] == 'Cash Available')[2];
-    console.log(cashWeight);
     var cashRating = cashWeight * this.state.cash;
     var profitWeight = WeightData.find(e => e[0] == 'Profitability')[2];
-    console.log(profitWeight);
     var profitRating = profitWeight * this.state.profitability;
-    console.log(profitRating);
     var rating = growthRating + burnRating + cashRating + profitRating;
-    console.log(rating);
     this.state.data[this.state.data.length - 1].data.datasets[0].data[1] = rating;
     this.updateChartResults(this.state.data[this.state.data.length - 1]);
   }
@@ -123,9 +129,9 @@ export default class HomePage extends Component {
     let execScore = this.state.execExper;
     let ageScore = this.state.age;
     let newScore = sectorScore + fundingScore + execScore + ageScore;
-    this.setState({ score: newScore });
-    document.getElementById("score-text").innerHTML = newScore;
     let companyName = document.getElementById('nameInput').value;
+    this.setState({ score: newScore, name: companyName });
+    document.getElementById("score-text").innerHTML = newScore;
     if (companyName != "") {
       this.state.data[0].data.datasets[0].label = companyName;
     }
@@ -161,7 +167,12 @@ export default class HomePage extends Component {
     }
   }
 
-  submitButton() {
+  submitButton = e => {
+    e.preventDefault();
+    var postState = { "name": this.state.name, "funding": this.state.funding, "growthRate": this.state.growthRate, "burnRate": this.state.burnRate };
+    axios.post(postURL, postState)
+      .then(response => { console.log(response) });
+
     this.setState({ submitted: true });
     document.getElementById('results').classList.remove('hidden');
     document.getElementById('not-results').classList.add('hidden');
@@ -310,7 +321,6 @@ export default class HomePage extends Component {
               </div>
             </div>
           </div>
-
           <br />
           <button type="button" class="button" id="submit-button" onClick={this.submitButton}>
             <span class="button__text">Submit</span>
