@@ -11,11 +11,20 @@ function App() {
   function buttonAction() {
     document.getElementById('startscreen').classList.add('hidden');
     document.getElementById('homepage').classList.remove('hidden');
+    document.getElementById('home-button-div').classList.remove('hidden');
   }
 
   function evaluatorButtonAction() {
     document.getElementById('startscreen').classList.add('hidden');
     document.getElementById('investor-view').classList.remove('hidden');
+    document.getElementById('home-button-div').classList.remove('hidden');
+  }
+
+  function homeButtonAction() {
+    document.getElementById('home-button-div').classList.add('hidden');
+    document.getElementById('startscreen').classList.remove('hidden');
+    document.getElementById('homepage').classList.add('hidden');
+    document.getElementById('investor-view').classList.add('hidden');
   }
 
   return (
@@ -50,7 +59,14 @@ function App() {
         <div id="investor-view" class="hidden">
           <InvestorView />
         </div>
-
+        <div id="home-button-div" class="hidden">
+          <button type="button" class="button" id="-button" home onClick={homeButtonAction}>
+            <span class="button__text">Home</span>
+            <span class="button__icon">
+              <ion-icon name="home-outline"></ion-icon>
+            </span>
+          </button>
+        </div>
       </header>
     </div>
 
