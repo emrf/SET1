@@ -1,23 +1,73 @@
 import React, { Component } from 'react';
 import ReactSlider from 'react-slider'
 import axios from 'axios';
+import { postURL } from './HomePage';
+import { useState } from 'react';
 
-const dataURL = 'https://sheet.best/api/sheets/19286fe5-7607-411d-b58f-86fc9f764b63';
-//const data = axios.get(dataURL);
+const blankPost = {
+  "name": "", "funding": "", "growthRate": "", "burnRate": "",
+  "patents": "", "subjective1": "", "subjective2": "", "numEvals": 0
+}
 
 export default class InvestorView extends Component {
   constructor() {
     super();
     this.state = {};
+    this.subjective1 = 0;
     this.sliderAction = this.sliderAction.bind(this);
+    this.submitButton = this.submitButton.bind(this);
+    this.updateName = this.updateName.bind(this);
+    this.companyName = '';
+  }
+
+  updateName(val) {
+    this.companyName = val.target.value;
+  }
+
+  isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
+  submitButton() {
+    var putState = {}
+    let name = this.companyName;
+    for (var i = 0; i < this.state.length; i++) {
+      var row = this.state[i];
+      if (row['name'] === name) {
+        putState = row;
+        var numEvals = parseInt(row['numEvals']);
+        var putSubj = this.subjective1;
+        var subjRowVal = parseInt(row['subjective1']);
+        if (isNaN(subjRowVal) || subjRowVal === 'NaN' || subjRowVal == '') {
+        } else {
+          var subj1Cum = subjRowVal * numEvals;
+          putSubj = (subj1Cum + this.subjective1) / (1 + numEvals);
+
+        }
+
+        //putState = { "name": name, "subjective1": putSubj, "numEvals": 1 + numEvals }
+        putState['subjective1'] = putSubj;
+        putState['numEvals'] = 1 + numEvals;
+        var putURL = postURL + '/' + i;
+        //axios.put(putURL, putState);
+      }
+    }
+    if (this.isEmpty(putState)) {
+      putState = blankPost;
+      putState["name"] = name;
+      putState["subjective1"] = this.subjective1;
+      putState["numEvals"] = 0;
+    }
+    console.log(putState);
+    axios.put(putURL, putState);
   }
 
   sliderAction(val, i) {
-    this.setState({ "subjective1": val })
+    this.subjective1 = val;
   }
 
   async componentDidMount() {
-    var tdata = await axios.get(dataURL);
+    var tdata = await axios.get(postURL);
     this.state = tdata.data;
     console.log(this.state);
     var col = [];
@@ -57,6 +107,12 @@ export default class InvestorView extends Component {
       <div>
         <div id="showData">
         </div>
+        < br />
+        <label id="nameInputLabel" class="itm" htmlFor='nameInput'>
+          Company Name:
+        </label>
+        <input id='nameInput' type='text' placeholder='Company A...' onChange={this.updateName}></input>
+        <br />
         <div class="slider-space QA">
           <label>Rate Team: </label>
           <ReactSlider id="slider"
@@ -73,6 +129,13 @@ export default class InvestorView extends Component {
             renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
             renderTrack={(props, state) => <div {...props} />}
           /></div>
+        <br />
+        <button type="button" class="button" id="submit-button" onClick={this.submitButton}>
+          <span class="button__text">Submit</span>
+          <span class="button__icon">
+            <ion-icon name="checkmark-done"></ion-icon>
+          </span>
+        </button>
       </div>
     )
   }

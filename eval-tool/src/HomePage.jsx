@@ -23,7 +23,7 @@ const defaultState = {
   weightData: WeightData
 }
 
-const postURL = 'https://sheet.best/api/sheets/19286fe5-7607-411d-b58f-86fc9f764b63';
+export const postURL = 'https://sheet.best/api/sheets/7a352bfd-9d5f-4039-9001-66cae6bd1d85';
 
 export default class HomePage extends Component {
   constructor() {
@@ -168,7 +168,7 @@ export default class HomePage extends Component {
 
   submitButton = e => {
     e.preventDefault();
-    var postState = { "name": this.state.name, "funding": this.state.funding, "growthRate": this.state.growthRate, "burnRate": this.state.burnRate };
+    var postState = { "name": this.state.name, "funding": this.state.funding, "growthRate": this.state.growthRate, "burnRate": this.state.burnRate, "numEvals": '0' };
     axios.post(postURL, postState)
       .then(response => { console.log(response) });
 
@@ -191,6 +191,11 @@ export default class HomePage extends Component {
     this.setState(defaultState);
     document.getElementById('results').classList.add('hidden');
     document.getElementById('not-results').classList.remove('hidden');
+  }
+
+  async componentDidMount() {
+    var tdata = await axios.get(postURL);
+    console.log(tdata);
   }
 
   render() {

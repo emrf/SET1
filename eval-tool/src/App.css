@@ -219,6 +219,12 @@
   padding: 20px;
 }
 
+#home-button-div {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
 /*
 
 keep last
