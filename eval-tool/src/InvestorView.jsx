@@ -90,7 +90,6 @@ export default class InvestorView extends Component {
             this.subjectiveName1 = parsedName.substring(this.backendKeyword.length);
             document.getElementById('subj-label1').innerHTML = this.subjectiveName1;
             count += 1;
-
           } else {
             this.subjectiveName2 = parsedName.substring(this.backendKeyword.length);
             document.getElementById('subj-label2').innerHTML = this.subjectiveName2;

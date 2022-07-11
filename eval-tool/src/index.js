@@ -24,6 +24,7 @@ function init() {
   Papa.parse('https://docs.google.com/spreadsheets/d/18lZ09UBT1S7jeZuqDDt8yDVpks4bK5farrYgEU0bY2U/edit#gid=0', {
     download: true,
     header: false,
+    skipEmptyLines: true,
     complete: function (results) {
       WeightData = results.data
     }
