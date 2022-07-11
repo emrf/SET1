@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactSlider from 'react-slider'
 import axios from 'axios';
 import { postURL } from './HomePage';
+import { WeightData } from '.';
 import { useState } from 'react';
 
 const blankPost = {
@@ -14,10 +15,16 @@ export default class InvestorView extends Component {
     super();
     this.state = {};
     this.subjective1 = 0;
+    this.subjective2 = 0;
     this.sliderAction = this.sliderAction.bind(this);
+    this.sliderAction2 = this.sliderAction2.bind(this);
     this.submitButton = this.submitButton.bind(this);
     this.updateName = this.updateName.bind(this);
+    this.parseWeightData = this.parseWeightData.bind(this);
     this.companyName = '';
+    this.subjectiveName1 = 'subjective1';
+    this.subjectiveName2 = 'subjective2';
+    this.backendKeyword = 'subjective_';
   }
 
   updateName(val) {
@@ -66,6 +73,42 @@ export default class InvestorView extends Component {
     this.subjective1 = val;
   }
 
+  sliderAction2(val, i) {
+    this.subjective2 = val;
+  }
+
+  parseWeightData() {
+    console.log(WeightData);
+    var count = 0;
+    for (var i = 0; i < WeightData.length; i++) {
+      var row = WeightData[i];
+      try {
+        var parsedName = row[0].toLowerCase();
+        if (parsedName.includes(this.backendKeyword)) {
+          console.log(parsedName);
+          if (count == 0) {
+            this.subjectiveName1 = parsedName.substring(this.backendKeyword.length);
+            document.getElementById('subj-label1').innerHTML = this.subjectiveName1;
+            count += 1;
+
+          } else {
+            this.subjectiveName2 = parsedName.substring(this.backendKeyword.length);
+            document.getElementById('subj-label2').innerHTML = this.subjectiveName2;
+          }
+          // var ns = 'urn:v'
+          // var newSlider = document.createElementNS(ns, 'ReactSlider');
+          // newSlider.setAttributeNS(ns, 'min', 0);
+          // newSlider.setAttributeNS(ns, 'max', 100);
+          // newSlider.setAttributeNS(ns, 'className', 'horizontal-slider');
+          // newSlider.setAttributeNS(ns, 'onChange', this.sliderAction);
+
+          // var xml = (new XMLSerializer).serializeToString(newSlider);
+          // document.getElementById('sliders').appendChild(newSlider);
+        }
+      } catch (err) { }
+    }
+  }
+
   async componentDidMount() {
     var tdata = await axios.get(postURL);
     this.state = tdata.data;
@@ -99,6 +142,7 @@ export default class InvestorView extends Component {
     var divContainer = document.getElementById("showData");
     divContainer.innerHTML = "";
     divContainer.appendChild(table);
+    this.parseWeightData();
   }
 
 
@@ -113,8 +157,8 @@ export default class InvestorView extends Component {
         </label>
         <input id='nameInput' type='text' placeholder='Company A...' onChange={this.updateName}></input>
         <br />
-        <div class="slider-space QA">
-          <label>Rate Team: </label>
+        <div id="sliders">
+          <label id="subj-label1">{this.subjectiveName1}</label>
           <ReactSlider id="slider"
             className="horizontal-slider"
             marks={true}
@@ -126,6 +170,21 @@ export default class InvestorView extends Component {
             trackClassName="example-track"
             markClassName="example-mark"
             onChange={this.sliderAction}
+            renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
+            renderTrack={(props, state) => <div {...props} />}
+          />
+          <label id="subj-label2">{this.subjectiveName2}</label>
+          <ReactSlider id="slider"
+            className="horizontal-slider"
+            marks={true}
+            defaultValue={0}
+            min={0}
+            max={100}
+            thumbClassName="example-thumb"
+            thumbActiveClassName='current-thumb'
+            trackClassName="example-track"
+            markClassName="example-mark"
+            onChange={this.sliderAction2}
             renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
             renderTrack={(props, state) => <div {...props} />}
           /></div>

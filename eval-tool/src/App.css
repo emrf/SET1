@@ -43,6 +43,7 @@
   /* height: 100vh; */
   margin: auto;
   padding: 10px;
+  height: 20px;
 }
 
 .example-thumb {
@@ -223,6 +224,28 @@
   position: absolute;
   left: 10px;
   top: 10px;
+}
+
+table,
+th,
+td {
+  text-align: center;
+  padding: 3px;
+}
+
+tbody>tr>:nth-child(1n) {
+  border-left: solid 2px skyblue;
+  border-right: solid 2px skyblue;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 2px 5px;
+  font-size: medium;
+}
+
+#sliders {
+  height: 100px;
 }
 
 /*
