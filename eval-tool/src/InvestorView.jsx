@@ -44,16 +44,21 @@ export default class InvestorView extends Component {
         putState = row;
         var numEvals = parseInt(row['numEvals']);
         var putSubj = this.subjective1;
+        var putSubj2 = this.subjective2;
         var subjRowVal = parseInt(row['subjective1']);
+        var subjRowVal2 = parseInt(row['subjective2']);
         if (isNaN(subjRowVal) || subjRowVal === 'NaN' || subjRowVal == '') {
         } else {
           var subj1Cum = subjRowVal * numEvals;
           putSubj = (subj1Cum + this.subjective1) / (1 + numEvals);
-
         }
-
+        if (!(isNaN(subjRowVal2) || subjRowVal2 == 'NaN' || subjRowVal2 == '')) {
+          var subj2Cum = subjRowVal2 * numEvals;
+          putSubj2 = (subj2Cum + this.subjective2) / (1 + numEvals);
+        }
         //putState = { "name": name, "subjective1": putSubj, "numEvals": 1 + numEvals }
         putState['subjective1'] = putSubj;
+        putState['subjective2'] = putSubj2;
         putState['numEvals'] = 1 + numEvals;
         var putURL = postURL + '/' + i;
         //axios.put(putURL, putState);
