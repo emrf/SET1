@@ -241,11 +241,24 @@ tbody>tr>:nth-child(1n) {
 table {
   border-collapse: collapse;
   border-spacing: 2px 5px;
-  font-size: medium;
+  font-size: xx-small;
+}
+
+table td:nth-child(1),
+table th:nth-child(1) {
+  display: none;
 }
 
 #sliders {
+  padding: 10px;
+  border-spacing: 10px;
   height: 100px;
+  width: 50px;
+  display: inline-table;
+}
+
+.custom-input {
+  vertical-align: middle;
 }
 
 /*

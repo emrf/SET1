@@ -5,29 +5,24 @@ import { postURL } from './HomePage';
 // import { WeightData } from '.';
 import { useState } from 'react';
 
-var WeightData = {};
+export var WeightData = {};
 const weightURL = 'https://sheet.best/api/sheets/03022bd4-76eb-4da0-ae15-c510ae78d99a';
 
 const blankPost = {
-  "name": "", "funding": "", "growthRate": "", "burnRate": "",
-  "patents": "", "subjective1": "", "subjective2": "", "numEvals": 0
+  "name": "", "numEvals": 0
 }
 
 export default class InvestorView extends Component {
   constructor() {
     super();
     this.state = {};
-    this.subjective1 = 0;
-    this.subjective2 = 0;
-    this.sliderAction = this.sliderAction.bind(this);
-    this.sliderAction2 = this.sliderAction2.bind(this);
     this.submitButton = this.submitButton.bind(this);
     this.updateName = this.updateName.bind(this);
     this.parseWeightData = this.parseWeightData.bind(this);
+    this.isANumberKey = this.isANumberKey.bind(this);
     this.companyName = '';
-    this.subjectiveName1 = 'subjective1';
-    this.subjectiveName2 = 'subjective2';
     this.backendKeyword = 'subjective_';
+    this.subjectiveCriteria = [];
   }
 
   updateName(val) {
@@ -41,48 +36,60 @@ export default class InvestorView extends Component {
   submitButton() {
     var putState = {}
     let name = this.companyName;
+    console.log(this.state);
     for (var i = 0; i < this.state.length; i++) {
       var row = this.state[i];
-      if (row['name'] === name) {
-        putState = row;
-        var numEvals = parseInt(row['numEvals']);
-        var putSubj = this.subjective1;
-        var putSubj2 = this.subjective2;
-        var subjRowVal = parseInt(row['subjective1']);
-        var subjRowVal2 = parseInt(row['subjective2']);
-        if (isNaN(subjRowVal) || subjRowVal === 'NaN' || subjRowVal == '') {
-        } else {
-          var subj1Cum = subjRowVal * numEvals;
-          putSubj = (subj1Cum + this.subjective1) / (1 + numEvals);
+      try {
+        if (row['name'].toLowerCase() === name.toLowerCase()) {
+          putState = row;
+          var numEvals = parseInt(row['numEvals']);
+          putState['numEvals'] = 1 + numEvals;
+          var values = Array.from(document.querySelectorAll('.custom-input')).map(input => input.value);
+          for (var j = 0; j < this.subjectiveCriteria.length; j++) {
+            var e = this.subjectiveCriteria[j];
+            var putSubjI = values[j];
+            var subjRowVal = 0;
+            try { subjRowVal = parseInt(row[e]) } catch (err) { }
+            if (!isNaN(subjRowVal) || subjRowVal == 'NaN' || subjRowVal == '') {
+              var subjCum = subjRowVal * numEvals;
+              console.log(subjRowVal);
+              console.log(numEvals);
+              console.log(putSubjI);
+              putSubjI = (subjCum + putSubjI) / (1 + numEvals);
+              putState[e] = putSubjI;
+            }
+          }
+          var putURL = postURL + '/' + i;
+          //axios.put(putURL, putState);
         }
-        if (!(isNaN(subjRowVal2) || subjRowVal2 == 'NaN' || subjRowVal2 == '')) {
-          var subj2Cum = subjRowVal2 * numEvals;
-          putSubj2 = (subj2Cum + this.subjective2) / (1 + numEvals);
-        }
-        //putState = { "name": name, "subjective1": putSubj, "numEvals": 1 + numEvals }
-        putState['subjective1'] = putSubj;
-        putState['subjective2'] = putSubj2;
-        putState['numEvals'] = 1 + numEvals;
-        var putURL = postURL + '/' + i;
-        //axios.put(putURL, putState);
-      }
+      } catch (err) { console.log(err) }
     }
     if (this.isEmpty(putState)) {
       putState = blankPost;
       putState["name"] = name;
-      putState["subjective1"] = this.subjective1;
       putState["numEvals"] = 0;
     }
+
     console.log(putState);
     axios.put(putURL, putState);
+    document.getElementById('');
   }
 
-  sliderAction(val, i) {
-    this.subjective1 = val;
-  }
-
-  sliderAction2(val, i) {
-    this.subjective2 = val;
+  isANumberKey(txt, evt) {
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode == 46) {
+      //Check if the text already contains the . character
+      if (txt.value.indexOf('.') === -1) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (charCode > 31 &&
+        (charCode < 48 || charCode > 57))
+        return false;
+    }
+    return true;
   }
 
   parseWeightData() {
@@ -92,28 +99,26 @@ export default class InvestorView extends Component {
       var row = WeightData[i];
       try {
         var parsedName = row['Criteria'].toLowerCase();
-        if (parsedName.includes(this.backendKeyword)) {
-          console.log(parsedName);
-          if (count == 0) {
-            this.subjectiveName1 = parsedName.substring(this.backendKeyword.length);
-            document.getElementById('subj-label1').innerHTML = this.subjectiveName1;
-            count += 1;
-          } else {
-            this.subjectiveName2 = parsedName.substring(this.backendKeyword.length);
-            document.getElementById('subj-label2').innerHTML = this.subjectiveName2;
-          }
-          // var ns = 'urn:v'
-          // var newSlider = document.createElementNS(ns, 'ReactSlider');
-          // newSlider.setAttributeNS(ns, 'min', 0);
-          // newSlider.setAttributeNS(ns, 'max', 100);
-          // newSlider.setAttributeNS(ns, 'className', 'horizontal-slider');
-          // newSlider.setAttributeNS(ns, 'onChange', this.sliderAction);
-
-          // var xml = (new XMLSerializer).serializeToString(newSlider);
-          // document.getElementById('sliders').appendChild(newSlider);
+        if (parsedName.includes(this.backendKeyword) && !(this.subjectiveCriteria.includes(parsedName))) {
+          this.subjectiveCriteria.push(parsedName);
+          parsedName = parsedName.substring(this.backendKeyword.length);
+          var label = document.createElement('label');
+          label.innerHTML = parsedName;
+          label.setAttribute('class', 'custom-label');
+          var labelText = 'subj-input-' + toString(count);
+          label.setAttribute('htmlFor', labelText)
+          var newInput = document.createElement('input');
+          const breaker = document.createElement('br');
+          newInput.setAttribute('type', 'text');
+          newInput.setAttribute('id', labelText);
+          newInput.setAttribute('class', 'custom-input');
+          newInput.setAttribute('onkeypress', "return this.isANumberKey(this, event);");
+          document.getElementById('sliders').appendChild(label).appendChild(newInput).appendChild(breaker);
+          count++;
         }
-      } catch (err) { }
+      } catch (err) { console.log(err) }
     }
+    console.log(this.subjectiveCriteria)
   }
 
   async componentDidMount() {
@@ -168,7 +173,7 @@ export default class InvestorView extends Component {
         <input id='nameInput' type='text' placeholder='Company A...' onChange={this.updateName}></input>
         <br />
         <div id="sliders">
-          <label id="subj-label1">{this.subjectiveName1}</label>
+          {/* <label id="subj-label1">{this.subjectiveName1}</label>
           <ReactSlider id="slider"
             className="horizontal-slider"
             marks={true}
@@ -197,7 +202,8 @@ export default class InvestorView extends Component {
             onChange={this.sliderAction2}
             renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
             renderTrack={(props, state) => <div {...props} />}
-          /></div>
+          /> */}
+        </div>
         <br />
         <button type="button" class="button" id="submit-button" onClick={this.submitButton}>
           <span class="button__text">Submit</span>

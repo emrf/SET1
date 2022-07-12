@@ -4,7 +4,7 @@ import ReactSlider from 'react-slider'
 import { Data } from "./Data";
 // import $ from 'jquery';
 import { Chart } from 'chart.js';
-import { WeightData } from "./index.js";
+import { WeightData } from './InvestorView';
 import axios from 'axios';
 
 const defaultState = {
@@ -96,13 +96,13 @@ export default class HomePage extends Component {
   }
 
   calc2Rating() {
-    var growthWeight = WeightData.find(e => e[0] == 'Growth Rate')[2];
+    var growthWeight = WeightData.find(e => e['Criteria'] == 'Growth Rate')[2];
     var growthRating = growthWeight * this.state.growthRate;
-    var burnWeight = WeightData.find(e => e[0] == 'Burn Rate')[2];
+    var burnWeight = WeightData.find(e => e['Criteria'] == 'Burn Rate')[2];
     var burnRating = burnWeight * this.state.burnRate;
-    var cashWeight = WeightData.find(e => e[0] == 'Cash Available')[2];
+    var cashWeight = WeightData.find(e => e['Criteria'] == 'Cash Available')[2];
     var cashRating = cashWeight * this.state.cash;
-    var profitWeight = WeightData.find(e => e[0] == 'Profitability')[2];
+    var profitWeight = WeightData.find(e => e['Criteria'] == 'Profitability')[2];
     var profitRating = profitWeight * this.state.profitability;
     var rating = growthRating + burnRating + cashRating + profitRating;
     this.state.data[this.state.data.length - 1].data.datasets[0].data[1] = rating;
