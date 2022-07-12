@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import ReactSlider from 'react-slider'
 import axios from 'axios';
 import { postURL } from './HomePage';
-import { WeightData } from '.';
+// import { WeightData } from '.';
 import { useState } from 'react';
+
+var WeightData = {};
+const weightURL = 'https://sheet.best/api/sheets/03022bd4-76eb-4da0-ae15-c510ae78d99a';
 
 const blankPost = {
   "name": "", "funding": "", "growthRate": "", "burnRate": "",
@@ -88,7 +91,7 @@ export default class InvestorView extends Component {
     for (var i = 0; i < WeightData.length; i++) {
       var row = WeightData[i];
       try {
-        var parsedName = row[0].toLowerCase();
+        var parsedName = row['Criteria'].toLowerCase();
         if (parsedName.includes(this.backendKeyword)) {
           console.log(parsedName);
           if (count == 0) {
@@ -115,6 +118,9 @@ export default class InvestorView extends Component {
 
   async componentDidMount() {
     var tdata = await axios.get(postURL);
+    WeightData = await axios.get(weightURL);
+    WeightData = WeightData.data;
+    console.log(WeightData);
     this.state = tdata.data;
     console.log(this.state);
     var col = [];
