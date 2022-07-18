@@ -1,3 +1,7 @@
+body {
+  overflow-x: auto;
+}
+
 .App {
   text-align: center;
   padding-top: 50px;
@@ -242,6 +246,7 @@ table {
   border-collapse: collapse;
   border-spacing: 2px 5px;
   font-size: xx-small;
+  table-layout: initial;
 }
 
 table td:nth-child(1),

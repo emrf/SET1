@@ -1,3 +1,14 @@
+
+//Data is list of jsons. Each element in list is for different chart.
+//Each json has the following format:
+//name of chart, type of chart ('radar'). 
+//Data:
+//  labels for each point, 
+//   datasets (list, one element for each dataset, each should be different color):
+//    label for dataset
+//    data: datapoints, align with corresponding label
+//    collor options
+// options: more options
 export const Data = [
   {
     name: 'data1',

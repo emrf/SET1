@@ -23,6 +23,7 @@ const defaultState = {
   weightData: WeightData
 }
 
+//Sheet.best connection URL for database sheet. Ask Eran for login. 
 export const postURL = 'https://sheet.best/api/sheets/7a352bfd-9d5f-4039-9001-66cae6bd1d85';
 
 export default class HomePage extends Component {
@@ -60,42 +61,49 @@ export default class HomePage extends Component {
   }
 
   updateExpSlider(val, i) {
+    //function called on change of executive experience slider
     this.state.data[0].data.datasets[0].data[0] = val * 10 //set first index of "your company" dataset to exec exper val
     this.setState({ execExper: val }, this.updateScore);
     this.updateChart1(this.state.data[0]);
   }
 
   updateAgeSlider(val, i) {
+    //function called on change of age slider
     this.state.data[1].data.datasets[0].data[3] = val * 5;
     this.setState({ age: val }, this.updateScore);
     this.updateChart2(this.state.data[1]);
   }
 
   updateGrowthSlider(val, i) {
+    //function called on change of grwoth slider
     this.state.data[1].data.datasets[0].data[0] = val;
     this.setState({ growthRate: val });
     this.calc2Rating();
   }
 
   updateBurnSlider(val, i) {
+    //function called on change of burn rate slider
     this.state.data[1].data.datasets[0].data[1] = val;
     this.setState({ burnRate: val });
     this.calc2Rating();
   }
 
   updateCashSlider(val, i) {
+    //function called on change of cash available slider
     this.state.data[1].data.datasets[0].data[2] = val;
     this.setState({ cash: val });
     this.calc2Rating();
   }
 
   updateProfitSlider(val, i) {
+    //function called on change of profit slider
     this.state.data[1].data.datasets[0].data[3] = val;
     this.setState({ profitability: val });
     this.calc2Rating();
   }
 
   calc2Rating() {
+    //calculate a rating score and update charts
     var growthWeight = WeightData.find(e => e['Criteria'] == 'Growth Rate')[2];
     var growthRating = growthWeight * this.state.growthRate;
     var burnWeight = WeightData.find(e => e['Criteria'] == 'Burn Rate')[2];
@@ -110,17 +118,20 @@ export default class HomePage extends Component {
   }
 
   fundingInput() {
+    //function called on change of funding dropdown. Update state and then score.
     let fundingStage = d3.select('#fundingSelect').property('value');
     this.setState({ funding: fundingStage }, this.updateScore);
   }
 
   sectorInput() {
+    //on change of sector dropdown, update sector and then score. 
     let sector = d3.select('#sectorSelect').property('value');
     this.state.data[0].data.datasets[0].data[4] = this.sectorMap[sector] * 10;
     this.setState({ sector: sector }, this.updateScore);
   }
 
   updateScore() {
+    //calculate score based on state
     let fundingStage = this.state.funding;
     let fundingScore = this.fundingMap[fundingStage];
     let sector = this.state.sector;
@@ -137,6 +148,7 @@ export default class HomePage extends Component {
   }
 
   updateChart1(newData) {
+    //create chart 1 on radar-canvas div. Only some features functional.
     if (this.state.submitted) {
       this.chart.destroy();
       var ctx = document.getElementById('radar-canvas');
@@ -147,6 +159,7 @@ export default class HomePage extends Component {
   }
 
   updateChart2(newData) {
+    //create chart 2 on radar-canvas 2 div. Based on 4 slider labels. 
     if (this.state.submitted) {
       this.chart2.destroy();
       var ctx2 = document.getElementById('radar-canvas2');
@@ -157,6 +170,8 @@ export default class HomePage extends Component {
   }
 
   updateChartResults(newData) {
+    //update final, cumulative chart for topics. 
+    //Only one topic functional based on results of chart 2.
     if (this.state.submitted) {
       this.chart2.destroy();
       var ctx2 = document.getElementById('radar-canvas-results');
@@ -167,18 +182,19 @@ export default class HomePage extends Component {
   }
 
   submitButton = e => {
+    //action taken upon submit button
     e.preventDefault();
+    //post state is JSON sent to URL with axios.
     var postState = { "name": this.state.name, "funding": this.state.funding, "growthRate": this.state.growthRate, "burnRate": this.state.burnRate, "numEvals": '0' };
     axios.post(postURL, postState)
-      .then(response => { console.log(response) });
-
+      .then(response => { console.log(response) }); //send and log res
     this.setState({ submitted: true });
     document.getElementById('results').classList.remove('hidden');
     document.getElementById('not-results').classList.add('hidden');
     this.updateScore();
     var ctx = document.getElementById('radar-canvas');
     ctx.classList.add('radar-canvas1');
-    var ctx2 = document.getElementById('radar-canvas2');
+    var ctx2 = document.getElementById('radar-canvas2'); //update charts
     ctx2.classList.add('radar-canvas1');
     this.chart = new Chart(ctx, this.state.data[0]);
     this.chart2 = new Chart(ctx2, this.state.data[1]);
@@ -188,7 +204,7 @@ export default class HomePage extends Component {
   }
 
   restartButton() {
-    this.setState(defaultState);
+    this.setState(defaultState); //undo saved progress on restart
     document.getElementById('results').classList.add('hidden');
     document.getElementById('not-results').classList.remove('hidden');
   }
@@ -241,6 +257,9 @@ export default class HomePage extends Component {
                 renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
                 renderTrack={(props, state) => <div {...props} />}
                 onChange={this.updateAgeSlider} />
+              {/* above is format for creating a react slider. 
+                Need a new function to pass to onChange unlesss you can find
+                a better way.  */}
             </div>
           </div>
           <br />
@@ -336,6 +355,7 @@ export default class HomePage extends Component {
           <div class="chart-container" style={{ display: "inline-block" }}>
             <div style={{ width: "400px", height: "400px" }}>
               <canvas id="radar-canvas" style={{ width: "400px", height: "400px" }}></canvas>
+              {/*canvas to draw radar chart on  */}
             </div>
             <div style={{ width: "400px", height: "400px" }}>
               <canvas id="radar-canvas2" style={{ width: "400px", height: "400px" }}></canvas>
