@@ -193,11 +193,6 @@ export default class HomePage extends Component {
     document.getElementById('not-results').classList.remove('hidden');
   }
 
-  async componentDidMount() {
-    var tdata = await axios.get(postURL);
-    console.log(tdata);
-  }
-
   render() {
     return (
       <div className="Home-Page">
