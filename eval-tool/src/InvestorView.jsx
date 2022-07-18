@@ -4,6 +4,7 @@ import axios from 'axios';
 import { postURL } from './HomePage';
 // import { WeightData } from '.';
 import { useState } from 'react';
+import { precisionRound } from 'd3';
 
 export var WeightData = {};
 const weightURL = 'https://sheet.best/api/sheets/03022bd4-76eb-4da0-ae15-c510ae78d99a';
@@ -23,6 +24,8 @@ export default class InvestorView extends Component {
     this.isANumberKey = this.isANumberKey.bind(this);
     this.dictSize = this.dictSize.bind(this);
     this.completeMount = this.completeMount.bind(this);
+    this.isNanOrBlank = this.isNanOrBlank.bind(this);
+    this.roundSafe = this.roundSafe.bind(this);
     this.companyName = '';
     this.backendKeyword = 'subjective_';
     this.subjectiveCriteria = [];
@@ -82,7 +85,8 @@ export default class InvestorView extends Component {
     // }
 
     await axios.put(putURL, putState);
-    document.getElementById('');
+    document.getElementById('hidable').classList.add('hidden');
+    document.getElementById('submitted').classList.remove('hidden');
   }
 
   isANumberKey(txt, evt) {
@@ -138,6 +142,18 @@ export default class InvestorView extends Component {
     //this.state = tdata.data;
   }
 
+  isNanOrBlank(str) {
+    return (isNaN(str) || str === '' || str === 'LEAVE_BLANK')
+  }
+
+  roundSafe(num) {
+    var parsed = parseInt(num);
+    if (isNaN(parsed)) {
+      return num;
+    }
+    return parsed;
+  }
+
   async completeMount() {
     var col = [];
     for (var i = 0; i < this.dictSize(this.stateData); i++) {
@@ -157,11 +173,13 @@ export default class InvestorView extends Component {
     }
 
     for (var i = 0; i < this.dictSize(this.stateData); i++) {
-      if (isNaN(this.stateData[i]['name'])) {
+      if (this.isNanOrBlank(this.stateData[i]['name'])) {
         tr = table.insertRow(-1);
         for (var j = 0; j < col.length; j++) {
           var tabCell = tr.insertCell(-1);
-          tabCell.innerHTML = this.stateData[i][col[j]];
+          if (j > 0) {
+            tabCell.innerHTML = (this.roundSafe(this.stateData[i][col[j]]));
+          }
         }
       }
     }
@@ -177,53 +195,30 @@ export default class InvestorView extends Component {
   render() {
     return (
       <div>
-        <div id="showData">
+        <div class="hidable">
+          <div id="showData">
+          </div>
+          < br />
+          <label id="nameInputLabel" class="itm" htmlFor='nameInput'>
+            Company Name:
+          </label>
+          <input id='nameInput' type='text' placeholder='Company A...' onChange={this.updateName}></input>
+          <br />
+          <div id="sliders">
+
+          </div>
+          <br />
+          <button type="button" class="button" id="submit-button" onClick={this.submitButton}>
+            <span class="button__text">Submit</span>
+            <span class="button__icon">
+              <ion-icon name="checkmark-done"></ion-icon>
+            </span>
+          </button>
         </div>
-        < br />
-        <label id="nameInputLabel" class="itm" htmlFor='nameInput'>
-          Company Name:
-        </label>
-        <input id='nameInput' type='text' placeholder='Company A...' onChange={this.updateName}></input>
-        <br />
-        <div id="sliders">
-          {/* <label id="subj-label1">{this.subjectiveName1}</label>
-          <ReactSlider id="slider"
-            className="horizontal-slider"
-            marks={true}
-            defaultValue={0}
-            min={0}
-            max={100}
-            thumbClassName="example-thumb"
-            thumbActiveClassName='current-thumb'
-            trackClassName="example-track"
-            markClassName="example-mark"
-            onChange={this.sliderAction}
-            renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
-            renderTrack={(props, state) => <div {...props} />}
-          />
-          <label id="subj-label2">{this.subjectiveName2}</label>
-          <ReactSlider id="slider"
-            className="horizontal-slider"
-            marks={true}
-            defaultValue={0}
-            min={0}
-            max={100}
-            thumbClassName="example-thumb"
-            thumbActiveClassName='current-thumb'
-            trackClassName="example-track"
-            markClassName="example-mark"
-            onChange={this.sliderAction2}
-            renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
-            renderTrack={(props, state) => <div {...props} />}
-          /> */}
+        <div class="submitted hidden">
+          <h2>Thank you for Participating!</h2>
+          <h3>Results</h3>
         </div>
-        <br />
-        <button type="button" class="button" id="submit-button" onClick={this.submitButton}>
-          <span class="button__text">Submit</span>
-          <span class="button__icon">
-            <ion-icon name="checkmark-done"></ion-icon>
-          </span>
-        </button>
       </div>
     )
   }
