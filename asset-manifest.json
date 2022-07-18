@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Startup-Evaluation-Tool/static/css/main.6d1d3bee.css",
-    "main.js": "/Startup-Evaluation-Tool/static/js/main.171a69b2.js",
+    "main.js": "/Startup-Evaluation-Tool/static/js/main.98643121.js",
     "static/js/787.8e6b4950.chunk.js": "/Startup-Evaluation-Tool/static/js/787.8e6b4950.chunk.js",
     "index.html": "/Startup-Evaluation-Tool/index.html",
     "main.6d1d3bee.css.map": "/Startup-Evaluation-Tool/static/css/main.6d1d3bee.css.map",
-    "main.171a69b2.js.map": "/Startup-Evaluation-Tool/static/js/main.171a69b2.js.map",
+    "main.98643121.js.map": "/Startup-Evaluation-Tool/static/js/main.98643121.js.map",
     "787.8e6b4950.chunk.js.map": "/Startup-Evaluation-Tool/static/js/787.8e6b4950.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6d1d3bee.css",
-    "static/js/main.171a69b2.js"
+    "static/js/main.98643121.js"
   ]
 }
