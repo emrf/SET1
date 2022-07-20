@@ -5,6 +5,7 @@ import { postURL } from './HomePage';
 // import { WeightData } from '.';
 import { useState } from 'react';
 import { precisionRound } from 'd3';
+import { Chart } from 'chart.js';
 
 export var WeightData = {};
 // sheet.best api connection url for weight data for criteria. Not backend database.
@@ -13,6 +14,30 @@ const weightURL = 'https://sheet.best/api/sheets/03022bd4-76eb-4da0-ae15-c510ae7
 
 const blankPost = {
   "name": "", "numEvals": 0
+}
+
+const blankRadar = {
+  type: 'radar',
+  data: {
+    labels: [
+    ],
+    datasets: [{
+      // label: 'Your Company',
+      data: [],
+      fill: true,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgb(255, 99, 132)',
+      pointBackgroundColor: 'rgb(255, 99, 132)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgb(255, 99, 132)'
+    }]
+  },
+  options: {
+    animation: {
+      duration: 1000
+    },
+  }
 }
 
 export default class InvestorView extends Component {
@@ -28,9 +53,13 @@ export default class InvestorView extends Component {
     this.completeMount = this.completeMount.bind(this);
     this.isNanOrBlank = this.isNanOrBlank.bind(this);
     this.roundSafe = this.roundSafe.bind(this);
+    this.createCharts = this.createCharts.bind(this);
     this.companyName = '';
     this.backendKeyword = 'subjective_'; //all subjective criteria must start like this on gsheet
     this.subjectiveCriteria = [];
+    this.findValueFromNames = this.findValueFromNames.bind(this);
+    this.getNumWeights = this.getNumWeights.bind(this);
+    this.numWeights = 0;
   }
 
   updateName(val) {
@@ -43,6 +72,19 @@ export default class InvestorView extends Component {
 
   dictSize(obj) {
     return Object.keys(obj).length;
+  }
+
+  getNumWeights() {
+    var count = 0;
+    var go = true;
+    while (go) {
+      var row = WeightData[count];
+      if (row.Criteria === NaN || row.Criteria === '') {
+        go = false
+      }
+      count++;
+    }
+    this.numWeights = count;
   }
 
   async submitButton() {
@@ -100,6 +142,60 @@ export default class InvestorView extends Component {
     await axios.put(putURL, putState); //upon submit hide and show next screen
     document.getElementById('hidable').classList.add('hidden');
     document.getElementById('submitted').classList.remove('hidden');
+    this.createCharts();
+  }
+
+  findValueFromNames(companyName, criteriaName) {
+    for (var i = 0; i < this.dictSize(this.stateData); i++) {
+      if (this.stateData[i].name === companyName) {
+        return this.stateData[i].criteriaName;
+      }
+    }
+  }
+
+  createCharts() {
+    var factors = [];
+    for (var i = 0; i < this.dictSize(WeightData); i++) { //create list of factors /topics from weightData
+      var row = WeightData[i];
+      if (row['Criteria'].toLowerCase().includes(this.backendKeyword)) {
+        var factorName = row['Topic']
+        if (!factors.includes(factorName)) {
+          factors.push(factorName);
+        }
+      }
+    }
+    for (var i = 0; i < factors.length; i++) {
+      //loop through factors and make radars for each one
+      var chartData = blankRadar;
+      var factor = factors[i];
+      chartData.name = factor;
+      var canvasDiv = document.createElement('div');
+      canvasDiv.setAttribute('style', '{{width: "400px", height: "400px"}}');
+      var newCanvas = document.createElement('canvas');
+      newCanvas.setAttribute('id', 'eval-canvas-' + toString(i));
+      newCanvas.setAttribute('style', '{{width: "400px", height: "400px"}}');
+      newCanvas.height = 400;
+      var canvasMasterDiv = document.getElementById('eval-chart-container');
+      canvasDiv.appendChild(newCanvas);
+      canvasMasterDiv.appendChild(canvasDiv);
+      for (var j = 0; j < this.numWeights; i++) {
+        // collect all criteria for given factor
+        row = WeightData[j];
+        try {
+          console.log(row);
+          var criteriaName = row.Criteria;
+          if (criteriaName.toLowerCase().includes(this.backendKeyword) && row['Topic'] === factor) {
+            chartData.data.labels.push(criteriaName);
+            var criteriaValue = this.findValueFromNames(this.companyName, criteriaName);
+            chartData.data.datasets[0].data.push(criteriaValue);
+          }
+        } catch (err) { }
+      }
+      console.log(chartData);
+      var chart = new Chart(newCanvas, chartData);
+      chart.resize();
+
+    }
   }
 
   isANumberKey(txt, evt) {
@@ -155,6 +251,7 @@ export default class InvestorView extends Component {
     const tdata = await axios.get(postURL); //load database
     this.stateData = tdata.data; //set stateData to database
     this.setState(this.stateData.data, this.completeMount); //also this
+    this.getNumWeights();
     //call completeMount() when done
   }
 
@@ -176,7 +273,7 @@ export default class InvestorView extends Component {
     var col = [];
     for (var i = 0; i < this.dictSize(this.stateData); i++) {
       for (var key in this.stateData[i]) {
-        if (col.indexOf(key) === -1) {
+        if (col.indexOf(key) === -1 && !key.toLowerCase().includes(this.backendKeyword)) {
           col.push(key); //headers
         }
       }
@@ -234,6 +331,10 @@ export default class InvestorView extends Component {
         <div id="submitted" class="hidden">
           <h2>Thank you for Participating!</h2>
           <h3>Results</h3>
+          <br />
+          <div id="eval-chart-container" style={{ display: "inline-block" }}>
+            {/* charts added here */}
+          </div>
         </div>
       </div>
     )
