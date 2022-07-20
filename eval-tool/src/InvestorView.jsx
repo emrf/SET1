@@ -58,8 +58,19 @@ export default class InvestorView extends Component {
     this.backendKeyword = 'subjective_'; //all subjective criteria must start like this on gsheet
     this.subjectiveCriteria = [];
     this.findValueFromNames = this.findValueFromNames.bind(this);
-    this.getNumWeights = this.getNumWeights.bind(this);
-    this.numWeights = 0;
+    var chart1;
+    var chart1Data = {}
+    var chart2;
+    var chart2Data = {}
+    var chart3;
+    var chart3Data = {}
+    var chart4;
+    var chart4Data = {}
+    var chart5;
+    var chart5Data = {}
+
+    this.charts = [chart1, chart2, chart3, chart4, chart5];
+    this.chartDataList = [chart1Data, chart2Data, chart3Data, chart4Data, chart5Data]
   }
 
   updateName(val) {
@@ -72,19 +83,6 @@ export default class InvestorView extends Component {
 
   dictSize(obj) {
     return Object.keys(obj).length;
-  }
-
-  getNumWeights() {
-    var count = 0;
-    var go = true;
-    while (go) {
-      var row = WeightData[count];
-      if (row.Criteria === NaN || row.Criteria === '') {
-        go = false
-      }
-      count++;
-    }
-    this.numWeights = count;
   }
 
   async submitButton() {
@@ -147,14 +145,15 @@ export default class InvestorView extends Component {
 
   findValueFromNames(companyName, criteriaName) {
     for (var i = 0; i < this.dictSize(this.stateData); i++) {
-      if (this.stateData[i].name === companyName) {
-        return this.stateData[i].criteriaName;
+      if (this.stateData[i].name.toLowerCase() === companyName.toLowerCase()) {
+        return this.stateData[i][criteriaName];
       }
     }
   }
 
   createCharts() {
     var factors = [];
+    var charts = [];
     for (var i = 0; i < this.dictSize(WeightData); i++) { //create list of factors /topics from weightData
       var row = WeightData[i];
       if (row['Criteria'].toLowerCase().includes(this.backendKeyword)) {
@@ -164,37 +163,43 @@ export default class InvestorView extends Component {
         }
       }
     }
-    for (var i = 0; i < factors.length; i++) {
+    console.log(factors);
+    for (var i = 0; i < factors.length; i += 1) {
       //loop through factors and make radars for each one
-      var chartData = blankRadar;
+      this.chartDataList[i] = blankRadar;
       var factor = factors[i];
-      chartData.name = factor;
+      console.log(factor);
+      this.chartDataList[i].name = factor;
+      this.chartDataList[i].data.datasets[0].label = factor;
       var canvasDiv = document.createElement('div');
       canvasDiv.setAttribute('style', '{{width: "400px", height: "400px"}}');
       var newCanvas = document.createElement('canvas');
-      newCanvas.setAttribute('id', 'eval-canvas-' + toString(i));
+      var num = i.toString();
+      console.log(num);
+      newCanvas.setAttribute('id', 'eval-canvas-' + num);
       newCanvas.setAttribute('style', '{{width: "400px", height: "400px"}}');
       newCanvas.height = 400;
       var canvasMasterDiv = document.getElementById('eval-chart-container');
       canvasDiv.appendChild(newCanvas);
       canvasMasterDiv.appendChild(canvasDiv);
-      for (var j = 0; j < this.numWeights; i++) {
+      for (var j = 0; j < WeightData.length; j++) {
         // collect all criteria for given factor
         row = WeightData[j];
         try {
-          console.log(row);
           var criteriaName = row.Criteria;
           if (criteriaName.toLowerCase().includes(this.backendKeyword) && row['Topic'] === factor) {
-            chartData.data.labels.push(criteriaName);
+            this.chartDataList[i].data.labels.push(criteriaName);
             var criteriaValue = this.findValueFromNames(this.companyName, criteriaName);
-            chartData.data.datasets[0].data.push(criteriaValue);
+            this.chartDataList[i].data.datasets[0].data.push(criteriaValue);
           }
-        } catch (err) { }
+        } catch (err) { console.log(err) }
       }
-      console.log(chartData);
-      var chart = new Chart(newCanvas, chartData);
-      chart.resize();
-
+      this.charts[i] = new Chart(newCanvas, this.chartDataList[i]);
+      console.log(this.charts);
+    }
+    for (i = 0; i < this.charts.length; i++) {
+      this.charts[i].update();
+      this.charts[i].resize();
     }
   }
 
