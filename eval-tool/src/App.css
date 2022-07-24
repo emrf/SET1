@@ -214,6 +214,11 @@ body {
   height: 400px;
 }
 
+.custom-canvas {
+  /* canvas for custom radar in investorview.jsx */
+  background-color: rgb(181, 178, 178);
+}
+
 .two-sliders {
   width: 100%;
   float: left;
