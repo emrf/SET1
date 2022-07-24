@@ -21,7 +21,7 @@
     "react-chartjs-2": "^4.1.0",
     "react-compound-slider": "^3.3.1",
     "react-dom": "^18.1.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-slider": "^2.0.1",
     "rsuite": "^5.13.1",
     "semantic-ui-css": "^2.4.1",
