@@ -59,16 +59,6 @@ export default class InvestorView extends Component {
     this.backendKeyword = 'subjective_'; //all subjective criteria must start like this on gsheet
     this.subjectiveCriteria = [];
     this.findValueFromNames = this.findValueFromNames.bind(this);
-    // var blankCanvas = document.getElementById('blank-canvas');
-    // blankCanvas.setAttribute('style', '{{width: "400px", height: "400px"}}');
-    // this.chart1 = new Chart(blankCanvas, blankRadar);
-    // this.chart2 = new Chart(blankCanvas, blankRadar);;
-    // this.chart3 = new Chart(blankCanvas, blankRadar);;
-    // this.chart4 = new Chart(blankCanvas, blankRadar);;
-    // this.chart5 = new Chart(blankCanvas, blankRadar);;
-    // this.finalChart = new Chart(blankCanvas, blankRadar);;
-    // this.chartList = [this.chart1, this.chart2, this.chart3, this.chart4, this.chart5, this.finalChart];
-    // this.chartList = [chart1, chart2, chart3, chart4, chart5, finalChart]; //you can add more, but keep finalChart last
     this.factorScores = {};
     this.chartList = [];
   }
@@ -165,7 +155,7 @@ export default class InvestorView extends Component {
     console.log(factors);
     for (var i = 0; i < factors.length; i += 1) {
       //loop through factors and make radars for each one
-      var newChart = blankRadar;
+      const newChart = JSON.parse(JSON.stringify(blankRadar));
       var factor = factors[i];
       var factorScore = 0;
       console.log(factor);
@@ -192,6 +182,7 @@ export default class InvestorView extends Component {
           var criteriaName = row.Criteria;
           if (criteriaName.toLowerCase().includes(this.backendKeyword) && row['Topic'] === factor) {
             numCriteria++;
+            console.log(criteriaName)
             newChart.data.labels.push(criteriaName);
             var criteriaValue = this.findValueFromNames(this.companyName, criteriaName);
             newChart.data.datasets[0].data.push(criteriaValue);
@@ -199,43 +190,28 @@ export default class InvestorView extends Component {
           }
         } catch (err) { console.log(err) }
       }
-      if (i == 0) {
-        this.chart1 = new Chart(newCanvas, newChart);
-        this.chartList.push(this.chart1);
-      } else if (i == 1) {
-        this.chart2 = new Chart(newCanvas, newChart)
-        this.chartList.push(this.chart2);
-      } else if (i == 3) {
-        this.chart3 = new Chart(newCanvas, newChart);
-        this.chartList.push(this.chart3);
-      } else if (i == factors.length - 1) {
-        this.finalChart = new Chart(newCanvas, newChart);
-        this.chartList.push(this.chart4);
-      }
-      // var tempChart = new Chart(newCanvas, newChart);
-      // tempChart.update();
-      // tempChart.resize();
-      // this.chartList[i] = tempChart;
-      // this.chartList[i].update();
-      // this.chartList[i].resize();
-      // this.chartList.push(new Chart(newCanvas, newChart));
+      console.log(newChart.data.labels)
+      var tempChart = new Chart(newCanvas, newChart);
+      this.chartList.push(tempChart)
       this.factorScores[factor] = factorScore / numCriteria;
     }
 
     this.createFinalChart();
+    console.log(this.chartList)
   }
 
   createFinalChart() {
-    var finalChart = blankRadar;
+    var finalChart = JSON.parse(JSON.stringify(blankRadar));
     finalChart.name = 'Overall Score';
+    finalChart.data.datasets[0].label = 'Overall';
     for (const [key, value] of Object.entries(this.factorScores)) {
       finalChart.data.labels.push(key);
       finalChart.data.datasets[0].data.push(value);
     }
     var canvasDiv = document.createElement('div');
     canvasDiv.setAttribute('style', '{{width: "400px", height: "400px"}}');
-    var newCanvas = document.createElement('canvas');
-    newCanvas.setAttribute('style', '{{width: "400px", height: "400px"}}');
+    var newCanvas = document.getElementById('radar-canvas-final');
+    // newCanvas.setAttribute('style', '{{width: "400px", height: "400px"}}');
     newCanvas.height = 400;
     newCanvas.width = 400;
     newCanvas.classList.add('custom-canvas');
@@ -243,17 +219,14 @@ export default class InvestorView extends Component {
     canvasDiv.appendChild(newCanvas);
     canvasMasterDiv.appendChild(canvasDiv);
     this.tempChart = new Chart(newCanvas, finalChart);
-    this.chartList.push(this.tempChart);
-    var lastEl = this.chartList.length - 1;
-    this.chartList[lastEl] = this.tempChart;
-    this.chartList[lastEl].update();
-    this.chartList[lastEl].resize();
-    // this.chartList.push(new Chart(newCanvas, finalChart));
-    console.log(this.chartList)
-    for (var i = 0; i < this.chartList.length; i++) {
-      this.chartList[i].update();
-      this.chartList[i].resize();
-    }
+    //this.chartList.push(this.tempChart);
+    // var lastEl = this.chartList.length - 1;
+    // this.chartList[lastEl] = this.tempChart;
+    // console.log(this.chartList)
+    // for (var i = 0; i < this.chartList.length; i++) {
+    //   // this.chartList[i].update();
+    //   this.chartList[i].resize();
+    // }
   }
 
   isANumberKey(txt, evt) {
@@ -391,6 +364,7 @@ export default class InvestorView extends Component {
           <br />
           <div id="eval-chart-container" style={{ display: "inline-block" }}>
             <canvas id='blank-canvas'></canvas>
+            <canvas id="radar-canvas-final" style={{ width: "400px", height: "400px" }}></canvas>
             {/* charts added here */}
           </div>
         </div>
