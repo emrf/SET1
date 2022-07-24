@@ -95,6 +95,7 @@ body {
   font-style: italic;
   position: relative;
   padding: 10px;
+  height: 400px;
 }
 
 #description::after {
@@ -115,6 +116,7 @@ body {
 
 #description-text {
   position: relative;
+  top: 100px;
 }
 
 #startscreen {
